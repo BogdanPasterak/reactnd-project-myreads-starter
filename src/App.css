@@ -28,6 +28,12 @@ body, .app {
 
 .bookshelf {
   padding: 0 10px 20px;
+  list-style-type: none;
+}
+
+.book-cover {
+  width: 128px;
+  height: 193px;
 }
 
 @media (min-width: 600px) {
