@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 class Book extends Component {
   render() {
@@ -8,6 +9,7 @@ class Book extends Component {
     const shelf = (this.props.book.shelf) ? this.props.book.shelf : false
     //console.log(url)
     //console.log(authors)
+    //console.log(this.props.addBook)
 
 
     return (
@@ -20,8 +22,11 @@ class Book extends Component {
           }
           {shelf ?
             (<div className="book-shelf-changer">
-              <select>
-                <option value="move" disabled>Move to...</option>
+              <select
+                onChange={(e) => (this.props.moveBook(this.props.book, e.target.value))}
+                defaultValue="move"
+              >
+                <option value="move" disabled >Move to...</option>
                 {this.props.book.shelf !== 'currentlyReading' && (
                   <option value="currentlyReading">Currently Reading</option>
                 )}
@@ -31,12 +36,15 @@ class Book extends Component {
                 {this.props.book.shelf !== 'read' && (
                   <option value="read">Read</option>
                 )}
-                <option value="none">None</option>
+                <option value="bin">Bin</option>
               </select>
             </div>
             ) : (
               <div className="book-add">
-                <a ></a>
+                <Link
+                  to="/"
+                  onClick={() => this.props.addBook(this.props.book)}
+                >Adding</Link>
               </div>
             )}
         </div>

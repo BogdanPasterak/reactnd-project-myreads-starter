@@ -1,4 +1,6 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import ListShelf from './ListShelf'
 import ListBooks from './ListBooks'
 import * as BooksAPI from './BooksAPI'
@@ -35,11 +37,35 @@ class BooksApp extends React.Component {
         this.setState({ found })
       })
   }
+  addBook = (book) => {
+    //console.log(book)
+    BooksAPI.update(book, 'wantToRead')
+      .then(BooksAPI.getAll().then((books) => {
+        this.setState({ books })
+    }))
+  }
+  removeBook = (book) => {
+    this.setState((state) => ({
+      books: state.books.filter((b) => b.id !== book.id)
+    }))
+    BooksAPI.update(book, 'bin')
+  }
+  moveBook = (book, shelf) => {
+    // console.log(book)
+    // console.log(shelf)
+    BooksAPI.update(book, shelf)
+    .then(
+      BooksAPI.getAll().then((books) => {
+      this.setState({ books })
+    })
+    )
+  }
 
   render() {
     return (
       <div className="app">
-        {this.state.showSearchPage ? (
+        <Route path="/search" render={() => (
+        //{this.state.showSearchPage ? (
           <div className="search-books">
             <div className="search-books-bar">
               <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
@@ -52,20 +78,30 @@ class BooksApp extends React.Component {
               </div>
             </div>
             <div className="search-books-results">
-                  <ListBooks listBooks={this.state.found} />
+                  <ListBooks
+                    listBooks={this.state.found}
+                    addBook={this.addBook}
+                  />
             </div>
           </div>
-        ) : (
+        )}/>
+        <Route exact path="/" render={() => (
           <div className="list-books">
             <div className="list-books-title">
               <h1>MyReads</h1>
             </div>
-            <ListShelf books={this.state.books} />
+            <ListShelf
+              books={this.state.books}
+              moveBook={this.moveBook}
+            />
             <div className="open-search">
-              <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
+              <Link
+                to="/search"
+                //onClick={() => this.setState({ showSearchPage: true })}
+              >Add a book</Link>
             </div>
           </div>
-        )}
+        )}/>
       </div>
     )
   }
