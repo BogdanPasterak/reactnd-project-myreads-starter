@@ -7,14 +7,10 @@ class Book extends Component {
     const url = (this.props.book.imageLinks) ? this.props.book.imageLinks.thumbnail : false
     const authors = (this.props.book.authors) ? this.props.book.authors : false
     const shelf = (this.props.book.shelf) ? this.props.book.shelf : false
-    //console.log(url)
-    //console.log(authors)
-    //console.log(this.props.addBook)
-    if (!shelf){
-      console.log(this.props.book)
-    }
-
-
+    // This class is used in two objects ListShelf and ListBooks.
+    // One has displayed books on the shelf, the search results are expensive.
+    // If the book does not have a shelf props, it was sophisticated
+    // and it can be put in a Want To Read shelf (function addBook)
     return (
       <div className="book">
         <div className="book-top">
