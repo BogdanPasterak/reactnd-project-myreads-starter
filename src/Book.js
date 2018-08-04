@@ -10,6 +10,9 @@ class Book extends Component {
     //console.log(url)
     //console.log(authors)
     //console.log(this.props.addBook)
+    if (!shelf){
+      console.log(this.props.book)
+    }
 
 
     return (

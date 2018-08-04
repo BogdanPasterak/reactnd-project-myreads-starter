@@ -1,18 +1,18 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Book from './Book'
 
-class ListShelf extends Component {
-  render() {
-    //console.log(this.props.books)
+function ListShelf (props) {
+
+    //console.log(props.books)
     return (
        <div className="list-books-content">
           <div className="bookshelf">
             <h2 className="bookshelf-title">Currently Reading</h2>
             <div className="bookshelf-books">
               <ol className="books-grid">
-                {this.props.books.filter(book => (book.shelf === 'currentlyReading')).map(book => (
+                {props.books.filter(book => (book.shelf === 'currentlyReading')).map(book => (
                   <li key={book.id}>
-                    <Book book={book} moveBook={this.props.moveBook} />
+                    <Book book={book} moveBook={props.moveBook} />
                   </li>
                 ))}
               </ol>
@@ -22,9 +22,9 @@ class ListShelf extends Component {
             <h2 className="bookshelf-title">Want to Read</h2>
             <div className="bookshelf-books">
               <ol className="books-grid">
-                {this.props.books.filter(book => (book.shelf === 'wantToRead')).map(book => (
+                {props.books.filter(book => (book.shelf === 'wantToRead')).map(book => (
                   <li key={book.id}>
-                    <Book book={book} moveBook={this.props.moveBook} />
+                    <Book book={book} moveBook={props.moveBook} />
                   </li>
                 ))}
               </ol>
@@ -34,9 +34,9 @@ class ListShelf extends Component {
             <h2 className="bookshelf-title">Read</h2>
             <div className="bookshelf-books">
               <ol className="books-grid">
-                {this.props.books.filter(book => (book.shelf === 'read')).map(book => (
+                {props.books.filter(book => (book.shelf === 'read')).map(book => (
                   <li key={book.id}>
-                    <Book book={book} moveBook={this.props.moveBook} />
+                    <Book book={book} moveBook={props.moveBook} />
                   </li>
                 ))}
               </ol>
@@ -46,7 +46,7 @@ class ListShelf extends Component {
 
 
     )
-  }
+
 }
 
 export default ListShelf
