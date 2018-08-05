@@ -7,6 +7,9 @@ body {
 body, .app {
   background: white;
 }
+p {
+  margin: 0.2em 0;
+}
 
 /* main page */
 
@@ -128,8 +131,11 @@ body, .app {
   width: 140px;
 }
 .book-title,
-.book-authors {
+.book-authors,
+.book-owner,
+.book-shelf-name {
   font-size: 0.8em;
+  margin: 0;
 }
 .book-title {
   margin-top: 10px;
@@ -142,6 +148,12 @@ body, .app {
 }
 .book-authors li {
   padding: 0;
+}
+.book-owner {
+  color: red;
+}
+.book-shelf-name {
+  color: #40e;
 }
 
 .book-top {

@@ -18,20 +18,32 @@ class BooksApp extends React.Component {
   }
 
   componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState({ books })
-    })
+    BooksAPI.getAll()
+      .then((books) => {this.setState({ books })})
+      .catch((error) => {console.log(error)})
   }
 
   foundBooks = (frase) => {
-    //console.log('Frase : ' + frase)
     if (frase)
-      BooksAPI.search(frase).then((found) => {
-        this.setState({ found })
-      })
-    else if (frase === '')
+      BooksAPI.search(frase)
+        .then((matched) => {
+          return matched.map((book) => (
+            this.state.books.find(myBook => myBook.id === book.id) || book
+          ))
+        })
+        .then((checked) => {
+          //console.log(checked)
+          this.setState({ found : checked })
+        })
+        .catch((error) => {
+          // empty query test frase :'line'
+          console.log(error)
+          this.setState({found : []})
+        })
+    else
       this.setState({found : []})
   }
+
   addBook = (book) => {
     //console.log(book)
     BooksAPI.update(book, 'wantToRead')
@@ -39,12 +51,7 @@ class BooksApp extends React.Component {
         this.setState({ books })
     }))
   }
-  removeBook = (book) => {
-    this.setState((state) => ({
-      books: state.books.filter((b) => b.id !== book.id)
-    }))
-    BooksAPI.update(book, 'bin')
-  }
+
   moveBook = (book, shelf) => {
     // console.log(book)
     // console.log(shelf)
@@ -68,15 +75,18 @@ class BooksApp extends React.Component {
                 {
 
                 }
-                <input onChange={(event) => this.foundBooks(event.target.value)} type="text" placeholder="Search by title or author"/>
+                <input onChange={(event) => this.foundBooks(event.target.value)}
+                      type="text"
+                      placeholder="Search by title or author"
+                />
 
               </div>
             </div>
             <div className="search-books-results">
-                  <ListBooks
-                    listBooks={this.state.found}
-                    addBook={this.addBook}
-                  />
+              <ListBooks
+                listBooks={this.state.found}
+                addBook={this.addBook}
+              />
             </div>
           </div>
         )}/>

@@ -2,15 +2,16 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 class Book extends Component {
+  nameShelf(shelf) {
+    // change 'currentlyReading' to 'Currently Reading'
+    return shelf.charAt(0).toUpperCase() + shelf.slice(1).replace(/([A-Z])/g, ' $1')
+  }
   render() {
     //console.log(this.props.book)
     const url = (this.props.book.imageLinks) ? this.props.book.imageLinks.thumbnail : false
     const authors = (this.props.book.authors) ? this.props.book.authors : false
     const shelf = (this.props.book.shelf) ? this.props.book.shelf : false
-    // This class is used in two objects ListShelf and ListBooks.
-    // One has displayed books on the shelf, the search results are expensive.
-    // If the book does not have a shelf props, it was sophisticated
-    // and it can be put in a Want To Read shelf (function addBook)
+
     return (
       <div className="book">
         <div className="book-top">
@@ -58,6 +59,18 @@ class Book extends Component {
               </li>
             ))}</ul>
           ) : (<div className="book-authors">No author</div>)
+        }
+        { this.props.sorted && shelf ?
+          (
+            <div>
+              <div className="book-owner">
+                You have it on the shelf:
+              </div>
+              <div className="book-shelf-name">
+                {this.nameShelf(shelf)}
+              </div>
+            </div>
+          ) : (<div></div>)
         }
       </div>
     )
