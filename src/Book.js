@@ -1,10 +1,15 @@
 import React, { Component } from 'react'
 
 class Book extends Component {
-  nameShelf(shelf) {
+  nameShelf = (shelf) => {
     // change 'currentlyReading' to 'Currently Reading'
     return (shelf.charAt(0).toUpperCase() + shelf.slice(1).replace(/([A-Z])/g, ' $1')).replace(' To ', ' to ')
   }
+  move = (e) => {
+    this.props.moveBook(this.props.book, e.target.value)
+    e.target.value = 'move'
+  }
+
   render() {
     //console.log(this.props.book)
     const url = (this.props.book.imageLinks) ? this.props.book.imageLinks.thumbnail : false
@@ -21,7 +26,7 @@ class Book extends Component {
           }
           <div className="book-shelf-changer">
             <select
-              onChange={(e) => (this.props.moveBook(this.props.book, e.target.value))}
+              onChange={(e) => this.move(e)}
               defaultValue="move"
             >
               <option value="move" disabled >Move to...</option>

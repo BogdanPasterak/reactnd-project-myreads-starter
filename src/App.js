@@ -6,7 +6,7 @@ import ListBooks from './ListBooks'
 import NoMatch from './NoMatch'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
-
+import { throttle, debounce } from "throttle-debounce"
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -14,7 +14,10 @@ class BooksApp extends React.Component {
     this.state = {
       books: [],
       found: [],
+      q: ""
     }
+    this.autocompleteSearchDebounced = debounce(500, this.autocompleteSearch);
+    this.autocompleteSearchThrottled = throttle(500, this.autocompleteSearch);
   }
 
   componentDidMount() {
@@ -38,6 +41,20 @@ class BooksApp extends React.Component {
     return
   }
 
+  updateBook = ( book ) => {
+    // update books
+    BooksAPI.getAll()
+      .then(books => this.setState({books}))
+    // update found if is
+    if (this.state.found.length)
+      BooksAPI.get(book.id)
+        .then(b => (
+          this.setState({found : this.state.found.map(a => (
+            (a.id !== b.id) ? a : b
+          ))})
+        ))
+  }
+
   foundBooks = (frase) => {
     if (frase)
       BooksAPI.search(frase)
@@ -58,36 +75,43 @@ class BooksApp extends React.Component {
   }
 
   moveBook = (book, shelf) => {
-    console.log(book.shelf)
-    // console.log(this.state.found)
+    //console.log(book.shelf)
     BooksAPI.update(book, shelf)
-      .then(
-        BooksAPI.get(book.id).then(bu => console.log(bu.shelf)),
-        BooksAPI.get(book.id).then(bu => (this.updateFound(bu))),
-        // BooksAPI.get(book.id).then(bu => (
-        //   this.setState({ found : this.state.found.find(b => b.id !== bu.id) || bu})
-        // )),
-        BooksAPI.getAll()
-          .then((books) => {this.setState({ books })})
-          .then(console.log(this.state.books)),
+      .then( idBooksOnShelfs => this.updateBook( book) )
+  }
+  changeQuery = event => {
+    this.setState({ q: event.target.value }, () => {
+      const q = this.state.q
+      if (q.length < 5) {
+        this.autocompleteSearchThrottled(this.state.q)
+      } else {
+        this.autocompleteSearchDebounced(this.state.q)
+      }
+    })
+  }
 
-        console.log("po"),
-        (() => (this.state.found.length > 0 && (
-                  console.log("nie pusta")
-        ))),
-        console.log(this.state.found.length),
-    )
-    //this.setState({ found : this.checkBooks(this.state.found)})
+  autocompleteSearch = q => {
+    this._fetch(q);
+  }
 
-      //.then( BooksAPI.get(book.id).then( b => console.log(b.shelf)))
+  _fetch = frase => {
 
-      //.then( BooksAPI.getAll().then((books) => {
-      //  this.setState({ found : this.checkBooks(this.state.found, books)})
-      //this.setState({ books })
-
-    //}))
-      // Update searched books
-      //.then(this.setState({ found : this.checkBooks(this.state.found)}))
+    if (frase)
+      BooksAPI.search(frase)
+        .then((matched) => {
+          return this.checkBooks(matched)
+        })
+        .then((checked) => {
+          //console.log(checked)
+          this.setState({ found : checked })
+        })
+        .catch((error) => {
+          // empty query test frase :'line'
+          console.log(error)
+          this.setState({found : []})
+        })
+    else
+      this.setState({found : []})
   }
 
   render() {
@@ -106,9 +130,10 @@ class BooksApp extends React.Component {
                 {
 
                 }
-                <input onChange={(event) => this.foundBooks(event.target.value)}
-                      type="text"
-                      placeholder="Search by title or author"
+                <input
+                  onChange={this.changeQuery}
+                  type="text"
+                  placeholder="Search by title or author"
                 />
 
               </div>
