@@ -23,13 +23,26 @@ class BooksApp extends React.Component {
       .catch((error) => {console.log(error)})
   }
 
+  checkBooks = (toCheckBooks) => {
+    return toCheckBooks.map((book) => (
+      this.state.books.find(myBook => myBook.id === book.id) || book))
+  }
+  updateFound = (newBook) => {
+    console.log("update")
+    if (this.state.found.length){
+          console.log("w sukanych sa")
+          this.setState({found : this.state.found.map(book => (
+            (book.id !== newBook.id) ? book : newBook
+          ))})
+    }
+    return
+  }
+
   foundBooks = (frase) => {
     if (frase)
       BooksAPI.search(frase)
         .then((matched) => {
-          return matched.map((book) => (
-            this.state.books.find(myBook => myBook.id === book.id) || book
-          ))
+          return this.checkBooks(matched)
         })
         .then((checked) => {
           //console.log(checked)
@@ -44,23 +57,37 @@ class BooksApp extends React.Component {
       this.setState({found : []})
   }
 
-  addBook = (book) => {
-    //console.log(book)
-    BooksAPI.update(book, 'wantToRead')
-      .then(BooksAPI.getAll().then((books) => {
-        this.setState({ books })
-    }))
-  }
-
   moveBook = (book, shelf) => {
-    // console.log(book)
-    // console.log(shelf)
+    console.log(book.shelf)
+    // console.log(this.state.found)
     BooksAPI.update(book, shelf)
-    .then(
-      BooksAPI.getAll().then((books) => {
-      this.setState({ books })
-    })
+      .then(
+        BooksAPI.get(book.id).then(bu => console.log(bu.shelf)),
+        BooksAPI.get(book.id).then(bu => (this.updateFound(bu))),
+        // BooksAPI.get(book.id).then(bu => (
+        //   this.setState({ found : this.state.found.find(b => b.id !== bu.id) || bu})
+        // )),
+        BooksAPI.getAll()
+          .then((books) => {this.setState({ books })})
+          .then(console.log(this.state.books)),
+
+        console.log("po"),
+        (() => (this.state.found.length > 0 && (
+                  console.log("nie pusta")
+        ))),
+        console.log(this.state.found.length),
     )
+    //this.setState({ found : this.checkBooks(this.state.found)})
+
+      //.then( BooksAPI.get(book.id).then( b => console.log(b.shelf)))
+
+      //.then( BooksAPI.getAll().then((books) => {
+      //  this.setState({ found : this.checkBooks(this.state.found, books)})
+      //this.setState({ books })
+
+    //}))
+      // Update searched books
+      //.then(this.setState({ found : this.checkBooks(this.state.found)}))
   }
 
   render() {
@@ -70,7 +97,11 @@ class BooksApp extends React.Component {
         <Route path="/search" render={() => (
           <div className="search-books">
             <div className="search-books-bar">
-              <Link to="/" className="close-search">Close</Link>
+              <Link
+                to="/"
+                className="close-search"
+                onClick={() => this.setState({found : []})}
+              >Close</Link>
               <div className="search-books-input-wrapper">
                 {
 
@@ -85,7 +116,7 @@ class BooksApp extends React.Component {
             <div className="search-books-results">
               <ListBooks
                 listBooks={this.state.found}
-                addBook={this.addBook}
+                moveBook={this.moveBook}
               />
             </div>
           </div>
@@ -100,7 +131,10 @@ class BooksApp extends React.Component {
               moveBook={this.moveBook}
             />
             <div className="open-search">
-              <Link to="/search">Add a book</Link>
+              <Link
+                to="/search"
+                onClick={() => this.setState({found : []})}
+              >Add a book</Link>
             </div>
           </div>
         )}/>

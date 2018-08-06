@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 
 class Book extends Component {
   nameShelf(shelf) {
     // change 'currentlyReading' to 'Currently Reading'
-    return shelf.charAt(0).toUpperCase() + shelf.slice(1).replace(/([A-Z])/g, ' $1')
+    return (shelf.charAt(0).toUpperCase() + shelf.slice(1).replace(/([A-Z])/g, ' $1')).replace(' To ', ' to ')
   }
   render() {
     //console.log(this.props.book)
@@ -20,33 +19,26 @@ class Book extends Component {
               style={{ backgroundImage: `url(${this.props.book.imageLinks.thumbnail})`}}></div>
             ) : (<div className="book-cover"></div>)
           }
-          {shelf ?
-            (<div className="book-shelf-changer">
-              <select
-                onChange={(e) => (this.props.moveBook(this.props.book, e.target.value))}
-                defaultValue="move"
-              >
-                <option value="move" disabled >Move to...</option>
-                {this.props.book.shelf !== 'currentlyReading' && (
-                  <option value="currentlyReading">Currently Reading</option>
-                )}
-                {this.props.book.shelf !== 'wantToRead' && (
-                  <option value="wantToRead">Want to Read</option>
-                )}
-                {this.props.book.shelf !== 'read' && (
-                  <option value="read">Read</option>
-                )}
+          <div className="book-shelf-changer">
+            <select
+              onChange={(e) => (this.props.moveBook(this.props.book, e.target.value))}
+              defaultValue="move"
+            >
+              <option value="move" disabled >Move to...</option>
+              {this.props.book.shelf !== 'currentlyReading' && (
+                <option value="currentlyReading">Currently Reading</option>
+              )}
+              {this.props.book.shelf !== 'wantToRead' && (
+                <option value="wantToRead">Want to Read</option>
+              )}
+              {this.props.book.shelf !== 'read' && (
+                <option value="read">Read</option>
+              )}
+              { shelf && (
                 <option value="bin">Bin</option>
-              </select>
-            </div>
-            ) : (
-              <div className="book-add">
-                <Link
-                  to="/"
-                  onClick={() => this.props.addBook(this.props.book)}
-                >Adding</Link>
-              </div>
-            )}
+              )}
+            </select>
+          </div>
         </div>
         <div className="book-title">
           {this.props.book.title}
@@ -60,7 +52,7 @@ class Book extends Component {
             ))}</ul>
           ) : (<div className="book-authors">No author</div>)
         }
-        { this.props.sorted && shelf ?
+        { this.props.sorted && shelf &&
           (
             <div>
               <div className="book-owner">
@@ -70,7 +62,7 @@ class Book extends Component {
                 {this.nameShelf(shelf)}
               </div>
             </div>
-          ) : (<div></div>)
+          )
         }
       </div>
     )
